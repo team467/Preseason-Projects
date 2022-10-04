@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.example.ExampleSubsystem;
 import lib.input.XboxController467;
 
 
