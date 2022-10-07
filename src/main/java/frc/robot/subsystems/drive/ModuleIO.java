@@ -11,7 +11,7 @@ public interface ModuleIO {
         public double[] driveCurrent = new double[]{};
         public double[] driveTemp = new double[]{};
 
-        public double turnAbsolutePosition = 0.0;
+        public double turnPositionAbsolute = 0.0;
         public double turnPosition = 0.0;
         public double turnVelocity = 0.0;
         public double turnAppliedVolts = 0.0;
@@ -25,7 +25,7 @@ public interface ModuleIO {
             table.put("DriveCurrent", driveCurrent);
             table.put("DriveTemp", driveTemp);
 
-            table.put("TurnAbsolutePosition", turnAbsolutePosition);
+            table.put("TurnPositionAbsolute", turnPositionAbsolute);
             table.put("TurnPosition", turnPosition);
             table.put("TurnVelocity", turnVelocity);
             table.put("TurnAppliedVolts", turnAppliedVolts);
@@ -40,7 +40,7 @@ public interface ModuleIO {
             driveCurrent = table.getDoubleArray("DriveCurrent", driveCurrent);
             driveTemp = table.getDoubleArray("DriveTemp", driveTemp);
 
-            turnAbsolutePosition = table.getDouble("TurnAbsolutePosition", turnAbsolutePosition);
+            turnPositionAbsolute = table.getDouble("TurnPositionAbsolute", turnPositionAbsolute);
             turnPosition = table.getDouble("TurnPosition", turnPosition);
             turnVelocity = table.getDouble("TurnVelocity", turnVelocity);
             turnAppliedVolts = table.getDouble("TurnAppliedVolts", turnAppliedVolts);

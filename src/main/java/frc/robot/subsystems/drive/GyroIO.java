@@ -21,4 +21,10 @@ public interface GyroIO {
             rate = table.getDouble("Rate", rate);
         }
     }
+
+    default void updateInputs(GyroIOInputs inputs) {
+        inputs.connected = false;
+        inputs.angle = 0.0;
+        inputs.rate = 0.0;
+    }
 }
