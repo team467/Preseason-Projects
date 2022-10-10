@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
+import lib.io.gyro.GyroIO;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {

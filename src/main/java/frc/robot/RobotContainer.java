@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.drive.DriveWithJoysticks;
 import frc.robot.controllers.CustomController2022;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIOADIS16470;
-import frc.robot.subsystems.drive.ModuleIOSparkMAX;
+import lib.io.gyro.GyroIOADIS16470;
 import frc.robot.subsystems.drive.ModuleIOSparkMAXNoAbs;
 import lib.input.ControllerQueue;
 
