@@ -14,8 +14,8 @@ import frc.robot.RobotConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-    private SimpleMotorFeedforward driveFF = RobotConstants.get().driveFF().getFeedforward();
-    private PIDController turnFB = RobotConstants.get().turnFB().getPIDController();
+    private static final SimpleMotorFeedforward driveFF = RobotConstants.get().driveFF().getFeedforward(); // Faster to type and shorter to read
+    private static final PIDController turnFB = RobotConstants.get().turnFB().getPIDController(); // Faster to type and shorter to read
     private final ModuleIO[] moduleIOs = new ModuleIO[4];
     private final ModuleIO.ModuleIOInputs[] moduleIOInputs = new ModuleIO.ModuleIOInputs[]{new ModuleIO.ModuleIOInputs(), new ModuleIO.ModuleIOInputs(), new ModuleIO.ModuleIOInputs(), new ModuleIO.ModuleIOInputs()};
     private final GyroIO gyroIO;
@@ -23,7 +23,7 @@ public class Drive extends SubsystemBase {
 
     private ChassisSpeeds setpoint = new ChassisSpeeds();
 
-    private SwerveDriveOdometry odometry = new SwerveDriveOdometry(RobotConstants.get().swerveKinematics(), Rotation2d.fromDegrees(gyroIOInputs.angle));
+    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(RobotConstants.get().swerveKinematics(), Rotation2d.fromDegrees(gyroIOInputs.angle));
 
     /**
      * Configures the drive subsystem
@@ -100,6 +100,14 @@ public class Drive extends SubsystemBase {
      */
     public Pose2d getPose() {
         return odometry.getPoseMeters();
+    }
+
+    /**
+     * Get the current angle of the robot using the gyro.
+     * @return The current gyro angle.
+     */
+    public Rotation2d getGyroAngle() {
+        return Rotation2d.fromDegrees(gyroIOInputs.angle);
     }
 
     /**

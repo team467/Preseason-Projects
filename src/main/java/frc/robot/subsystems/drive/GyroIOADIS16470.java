@@ -12,6 +12,7 @@ public class GyroIOADIS16470 implements GyroIO {
         gyro.reset();
     }
 
+    @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = true;
         inputs.angle = gyro.getAngle();

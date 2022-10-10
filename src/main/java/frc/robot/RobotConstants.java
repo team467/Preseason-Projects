@@ -13,8 +13,8 @@ public class RobotConstants {
     /**
      * TODO: Manually change this for simulation and Replay.
      */
-    private static final RobotType robot = null;
-    private static Constants constants;
+    private static final RobotType robot = RobotType.ROBOT_SWERVE;
+    private static Constants constants = new SwerveBot2022Constants();
 
     private RobotConstants() {
         throw new IllegalStateException("Utility class");

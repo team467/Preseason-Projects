@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import frc.robot.constants.controls.FeedbackConstant;
@@ -18,9 +19,23 @@ public class SwerveBot2022Constants implements Constants {
         return null;
     }
 
+    private Translation2d[] moduleTranslations() {
+        return new Translation2d[] {
+                new Translation2d(),
+                new Translation2d(),
+                new Translation2d(),
+                new Translation2d()
+        };
+    }
+
     @Override
     public double maxLinearSpeed() {
-        return 14.0;
+        return 10.0;
+    }
+
+    @Override
+    public double maxAngularSpeed() {
+        return 1; //TODO
     }
 
     @Override
@@ -45,7 +60,7 @@ public class SwerveBot2022Constants implements Constants {
 
     @Override
     public SwerveDriveKinematics swerveKinematics() {
-        return new SwerveDriveKinematics();
+        return new SwerveDriveKinematics(moduleTranslations());
     }
 
     @Override

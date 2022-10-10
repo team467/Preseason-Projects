@@ -48,6 +48,8 @@ public interface Constants {
      */
     double maxLinearSpeed();
 
+    double maxAngularSpeed();
+
     /**
      * @return Wheel diameter in m
      */
