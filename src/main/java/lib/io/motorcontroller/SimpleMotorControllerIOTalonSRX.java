@@ -1,39 +1,23 @@
 package lib.io.motorcontroller;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.math.util.Units;
 
 public class SimpleMotorControllerIOTalonSRX implements SimpleMotorControllerIO {
     private final WPI_TalonSRX motor;
     private double rotsToRads = 1.0;
-    private final boolean voltageMode;
-
-    public SimpleMotorControllerIOTalonSRX(int motorId, boolean inverted) {
-        this(motorId, inverted, -1);
-    }
 
     /**
      * Create a new SimpleMotorControllerIOTalonSRX
      *
-     * @param motorId    The ID of the motor
-     * @param inverted   Whether the motor is inverted
-     * @param rotsToRads The conversion factor from rotations to radians
-     *                   This can be done by either using the gear ratio and/or the wheel diameter
-     *                   for example:
-     *                   rotsToRads = 2 * Math.PI * gearRatioRotationsPerInput
-     *                   OR
-     *                   rotsToRads = Math.PI * wheelDiameter
+     * @param motorId   The ID of the motor
+     * @param inverted  Whether the motor is inverted
+     * @param gearRatio The gear ratio in inputs/outputs
      */
-    public SimpleMotorControllerIOTalonSRX(int motorId, boolean inverted, double rotsToRads) {
+    public SimpleMotorControllerIOTalonSRX(int motorId, boolean inverted, double gearRatio) {
         motor = new WPI_TalonSRX(motorId);
         motor.setInverted(inverted);
-        if (rotsToRads >= 0) {
-            this.rotsToRads = rotsToRads;
-            voltageMode = true;
-        } else {
-            voltageMode = false;
-        }
+        this.rotsToRads = Units.rotationsToRadians(1) * gearRatio;
     }
 
 
@@ -53,11 +37,6 @@ public class SimpleMotorControllerIOTalonSRX implements SimpleMotorControllerIO 
 
     @Override
     public void setVoltage(double volts) {
-        if (voltageMode) {
-            motor.setVoltage(volts);
-        } else {
-            DriverStation.reportWarning("Voltage mode not enabled in " + this, false);
-            motor.set(volts / RobotController.getBatteryVoltage());
-        }
+        motor.setVoltage(volts);
     }
 }

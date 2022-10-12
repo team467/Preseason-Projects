@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.math.util.Units;
 import frc.robot.RobotConstants;
 
 public class ModuleIOSparkMAXNoAbs implements ModuleIO {
@@ -19,7 +20,7 @@ public class ModuleIOSparkMAXNoAbs implements ModuleIO {
         turnEncoder = turnMotor.getEncoder();
 
         // Convert rotations to radians
-        double rotsToRads = Math.PI * RobotConstants.get().wheelDiameter() * RobotConstants.get().wheelGearRatio().getRotationsPerInput();
+        double rotsToRads = Units.rotationsToRadians(1) * RobotConstants.get().wheelGearRatio().getRotationsPerInput();
         driveEncoder.setPositionConversionFactor(rotsToRads);
         turnEncoder.setPositionConversionFactor(rotsToRads);
 

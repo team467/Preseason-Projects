@@ -2,46 +2,24 @@ package lib.io.motorcontroller;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 
 public class SimpleMotorControllerIOSparkMAX implements SimpleMotorControllerIO {
     private final CANSparkMax motor;
-    private final boolean voltageMode;
-
-    /**
-     * Create a new SimpleMotorControllerIOSparkMAX
-     * <p> This will use rotations as the unit for position and velocity, avoid using this if possible
-     *
-     * @param motorId  The ID of the motor
-     * @param inverted Whether the motor is inverted
-     */
-    public SimpleMotorControllerIOSparkMAX(int motorId, boolean inverted) {
-        this(motorId, inverted, -1);
-    }
 
     /**
      * Create a new SimpleMotorControllerIOSparkMAX
      *
-     * @param motorId    The ID of the motor
-     * @param inverted   Whether the motor is inverted
-     * @param rotsToRads The conversion factor from rotations to radians
-     *                   This can be done by either using the gear ratio and/or the wheel diameter
-     *                   for example:
-     *                   rotsToRads = 2 * Math.PI * gearRatioRotationsPerInput
-     *                   OR
-     *                   rotsToRads = Math.PI * wheelDiameter
+     * @param motorId   The ID of the motor
+     * @param inverted  Whether the motor is inverted
+     * @param gearRatio The gear ratio in inputs/outputs
      */
-    public SimpleMotorControllerIOSparkMAX(int motorId, boolean inverted, double rotsToRads) {
+    public SimpleMotorControllerIOSparkMAX(int motorId, boolean inverted, double gearRatio) {
         this.motor = new CANSparkMax(motorId, MotorType.kBrushless);
         this.motor.setInverted(inverted);
-        if (rotsToRads >= 0) {
-            this.motor.getEncoder().setPositionConversionFactor(rotsToRads);
-            this.motor.getEncoder().setVelocityConversionFactor(rotsToRads / 60);
-            voltageMode = true;
-        } else {
-            voltageMode = false;
-        }
+        this.motor.getEncoder().setPositionConversionFactor(Units.rotationsToRadians(1) * gearRatio);
+        this.motor.getEncoder().setVelocityConversionFactor(Units.rotationsPerMinuteToRadiansPerSecond(1));
     }
 
 
@@ -61,11 +39,6 @@ public class SimpleMotorControllerIOSparkMAX implements SimpleMotorControllerIO 
 
     @Override
     public void setVoltage(double volts) {
-        if (voltageMode) {
-            motor.setVoltage(volts);
-        } else {
-            DriverStation.reportWarning("Voltage mode not enabled in " + this, false);
-            motor.set(volts / RobotController.getBatteryVoltage());
-        }
+        motor.setVoltage(volts);
     }
 }

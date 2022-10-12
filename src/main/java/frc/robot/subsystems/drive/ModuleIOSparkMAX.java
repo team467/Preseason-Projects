@@ -26,7 +26,7 @@ public class ModuleIOSparkMAX implements ModuleIO {
         turnEncoderAbsolute = new CANCoder(turnAbsEncoderId);
 
         // Convert rotations to radians
-        double rotsToRads = Math.PI * RobotConstants.get().wheelDiameter() * RobotConstants.get().wheelGearRatio().getRotationsPerInput();
+        double rotsToRads = Units.rotationsToRadians(1) * RobotConstants.get().wheelGearRatio().getRotationsPerInput();
         driveEncoder.setPositionConversionFactor(rotsToRads);
         turnEncoder.setPositionConversionFactor(rotsToRads);
 
