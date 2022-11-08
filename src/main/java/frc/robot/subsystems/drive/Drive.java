@@ -6,25 +6,34 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
 import lib.io.gyro.GyroIO;
+import lib.swerveodometry.SwerveDriveKinematics;
+import lib.swerveodometry.SwerveDriveOdometry;
+import lib.swerveodometry.SwerveModulePosition;
 import org.littletonrobotics.junction.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Drive extends SubsystemBase {
     private static final SimpleMotorFeedforward driveFF = RobotConstants.get().driveFF().getFeedforward(); // Faster to type and shorter to read
-    private static final PIDController turnFB = RobotConstants.get().turnFB().getPIDController(); // Faster to type and shorter to read
+    private static final PIDController[] turnFB = new PIDController[4];
     private final ModuleIO[] moduleIOs = new ModuleIO[4];
     private final ModuleIO.ModuleIOInputs[] moduleIOInputs = new ModuleIO.ModuleIOInputs[]{new ModuleIO.ModuleIOInputs(), new ModuleIO.ModuleIOInputs(), new ModuleIO.ModuleIOInputs(), new ModuleIO.ModuleIOInputs()};
     private final GyroIO gyroIO;
     private final GyroIO.GyroIOInputs gyroIOInputs = new GyroIO.GyroIOInputs();
 
+    private double angle = 0;
+
     private ChassisSpeeds setpoint = new ChassisSpeeds();
 
-    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(RobotConstants.get().swerveKinematics(), Rotation2d.fromDegrees(gyroIOInputs.angle));
+    private final SwerveDriveOdometry odometry;
+
+    private double[] lastModulePositions = new double[]{0.0, 0.0, 0.0, 0.0};
 
     /**
      * Configures the drive subsystem
@@ -43,7 +52,21 @@ public class Drive extends SubsystemBase {
         moduleIOs[2] = blIO;
         moduleIOs[3] = brIO;
 
-        turnFB.enableContinuousInput(-Math.PI, Math.PI);
+        for (int i = 0; i < 4; i++) {
+            turnFB[i] = RobotConstants.get().turnFB().getPIDController();
+            turnFB[i].enableContinuousInput(-Math.PI, Math.PI);
+        }
+
+        SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+        for (int i = 0; i < 4; i++) {
+            modulePositions[i] = new SwerveModulePosition(moduleIOInputs[i].drivePosition * (RobotConstants.get().wheelDiameter() / 2), new Rotation2d(moduleIOInputs[i].turnPositionAbsolute));
+        }
+
+        if (gyroIOInputs.connected) {
+            odometry = new SwerveDriveOdometry(RobotConstants.get().swerveKinematics(), Rotation2d.fromDegrees(gyroIOInputs.angle), modulePositions);
+        } else {
+            odometry = new SwerveDriveOdometry(RobotConstants.get().swerveKinematics(), new Rotation2d(angle), modulePositions);
+        }
     }
 
     @Override
@@ -57,25 +80,113 @@ public class Drive extends SubsystemBase {
             Logger.getInstance().recordOutput("TurnPositions/" + i, moduleIOInputs[i].turnPosition);
         }
 
-        // Convert current setpoint to module states
-        SwerveModuleState[] moduleStates = RobotConstants.get().swerveKinematics().toSwerveModuleStates(setpoint);
-        // Limit max speed
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, RobotConstants.get().maxLinearSpeed());
+        // Update angle measurements
+        Rotation2d[] turnPositions = new Rotation2d[4];
         for (int i = 0; i < 4; i++) {
-            // We should not turn more than 90 degrees
-            SwerveModuleState optimizedState = SwerveModuleState.optimize(moduleStates[i], new Rotation2d(moduleIOInputs[i].turnPosition));
-            moduleIOs[i].setTurnVoltage(turnFB.calculate(moduleIOInputs[i].turnPosition, optimizedState.angle.getRadians()));
-
-            // Meters per second to radians per second
-            double driveVelocity = optimizedState.speedMetersPerSecond / (RobotConstants.get().wheelDiameter() / 2);
-            moduleIOs[i].setDriveVoltage(driveFF.calculate(driveVelocity));
-
-            Logger.getInstance().recordOutput("DriveSetpoints/" + i, driveVelocity);
-            Logger.getInstance().recordOutput("TurnSetpoints/" + i, optimizedState.angle.getRadians());
+            turnPositions[i] =
+                    new Rotation2d(moduleIOInputs[i].turnPositionAbsolute);
         }
 
-        odometry.update(Rotation2d.fromDegrees(gyroIOInputs.angle), moduleStates[0], moduleStates[1], moduleStates[2], moduleStates[3]);
+        if (DriverStation.isDisabled()) {
+            // Disable output while disabled
+            for (int i = 0; i < 4; i++) {
+                moduleIOs[i].setTurnVoltage(0.0);
+                moduleIOs[i].setDriveVoltage(0.0);
+            }
+        } else {
+            // In normal mode, run the controllers for turning and driving based on the current
+            // setpoint
+            SwerveModuleState[] setpointStates =
+                    RobotConstants.get().swerveKinematics().toSwerveModuleStates(setpoint);
+            SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates,
+                    RobotConstants.get().maxLinearSpeed());
+
+            // If stationary, go to last state
+            boolean isStationary =
+                    Math.abs(setpoint.vxMetersPerSecond) < 1e-3
+                            && Math.abs(setpoint.vyMetersPerSecond) < 1e-3
+                            && Math.abs(setpoint.omegaRadiansPerSecond) < 1e-3;
+
+            SwerveModuleState[] setpointStatesOptimized =
+                    new SwerveModuleState[]{null, null, null, null};
+            for (int i = 0; i < 4; i++) {
+                // Run turn controller
+                setpointStatesOptimized[i] =
+                        SwerveModuleState.optimize(setpointStates[i], turnPositions[i]);
+                if (isStationary) {
+                    moduleIOs[i].setTurnVoltage(0.0);
+                } else {
+                    moduleIOs[i].setTurnVoltage(
+                            turnFB[i].calculate(turnPositions[i].getRadians(),
+                                    setpointStatesOptimized[i].angle.getRadians()));
+                }
+
+                // Update velocity based on turn error
+                setpointStatesOptimized[i].speedMetersPerSecond *=
+                        Math.cos(turnFB[i].getPositionError());
+
+                // Run drive controller
+                double velocityRadPerSec =
+                        setpointStatesOptimized[i].speedMetersPerSecond / (RobotConstants.get().wheelDiameter() / 2);
+                moduleIOs[i].setDriveVoltage(
+                        driveFF.calculate(velocityRadPerSec));
+
+                // Log individual setpoints
+                Logger.getInstance().recordOutput(
+                        "SwerveDriveSetpoints/" + Integer.toString(i),
+                        velocityRadPerSec);
+                Logger.getInstance().recordOutput(
+                        "SwerveTurnSetpoints/" + Integer.toString(i),
+                        setpointStatesOptimized[i].angle.getRadians());
+            }
+
+            // Log all module setpoints
+            logModuleStates("SwerveModuleStates/Setpoints", setpointStates);
+            logModuleStates("SwerveModuleStates/SetpointsOptimized",
+                    setpointStatesOptimized);
+        }
+
+        SwerveModuleState[] measuredStates =
+                new SwerveModuleState[]{null, null, null, null};
+
+        for (int i = 0; i < 4; i++) {
+            measuredStates[i] = new SwerveModuleState(
+                    moduleIOInputs[i].driveVelocity * (RobotConstants.get().wheelDiameter() / 2),
+                    turnPositions[i]);
+        }
+
+        // Update odometry
+        SwerveModulePosition[] measuredPositions = new SwerveModulePosition[4];
+        for (int i = 0; i < 4; i++) {
+            measuredPositions[i] = new SwerveModulePosition(moduleIOInputs[i].drivePosition * (RobotConstants.get().wheelDiameter() / 2), turnPositions[i]);
+        }
+        if (gyroIOInputs.connected) {
+            odometry.update(Rotation2d.fromDegrees(gyroIOInputs.angle), measuredPositions[0], measuredPositions[1], measuredPositions[2], measuredPositions[3]);
+        } else {
+            angle += RobotConstants.get().swerveKinematics().toChassisSpeeds(measuredStates[0], measuredStates[1], measuredStates[2], measuredStates[3]).omegaRadiansPerSecond;
+            odometry.update(new Rotation2d(angle), measuredPositions[0], measuredPositions[1], measuredPositions[2], measuredPositions[3]);
+        }
+        // Log measured states
+        logModuleStates("SwerveModuleStates/Measured", measuredStates);
+
+        // Log odometry pose
         Logger.getInstance().recordOutput("Odometry", new double[]{odometry.getPoseMeters().getTranslation().getX(), odometry.getPoseMeters().getTranslation().getY(), odometry.getPoseMeters().getRotation().getRadians()});
+    }
+
+    /**
+     * Log robot swerve module states for AdvantageScope (thanks Mechanical Advantage!)
+     *
+     * @param key    The name of the field to record. It will be stored under "/RealOutputs" or "/ReplayOutputs"
+     * @param states The states of the wheels.
+     */
+    private void logModuleStates(String key, SwerveModuleState[] states) {
+        List<Double> dataArray = new ArrayList<Double>();
+        for (int i = 0; i < 4; i++) {
+            dataArray.add(states[i].angle.getRadians());
+            dataArray.add(states[i].speedMetersPerSecond);
+        }
+        Logger.getInstance().recordOutput(key,
+                dataArray.stream().mapToDouble(Double::doubleValue).toArray());
     }
 
     /**
@@ -105,6 +216,7 @@ public class Drive extends SubsystemBase {
 
     /**
      * Get the current angle of the robot using the gyro.
+     *
      * @return The current gyro angle.
      */
     public Rotation2d getGyroAngle() {
@@ -112,16 +224,16 @@ public class Drive extends SubsystemBase {
     }
 
     /**
-     * Drive the robot based on given speeds on the x and y-axis.
+     * Drive the robot based on given velocities on the x and y-axis.
      *
-     * @param x             Speed of the robot in the x direction.
-     * @param y             Speed of the robot in the y direction.
+     * @param x             Velocity of the robot in the x direction.
+     * @param y             Velocity of the robot in the y direction.
      * @param rot           Angular rate of the robot.
      * @param fieldRelative Whether the given speeds are field relative.
      */
-    public void speedDrive(double x, double y, double rot, boolean fieldRelative) {
+    public void chassisDrive(double x, double y, double rot, boolean fieldRelative) {
         if (fieldRelative) {
-            runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(x, y, rot, Rotation2d.fromDegrees(gyroIOInputs.angle)));
+            runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(x, y, rot, getPose().getRotation()));
         } else {
             runVelocity(new ChassisSpeeds(x, y, rot));
         }

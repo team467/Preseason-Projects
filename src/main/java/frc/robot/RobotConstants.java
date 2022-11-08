@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.RobotType;
+import frc.robot.constants.SimBot2022Constants;
 import frc.robot.constants.SwerveBot2022Constants;
 
 import java.io.BufferedReader;
@@ -13,8 +14,8 @@ public class RobotConstants {
     /**
      * TODO: Manually change this for simulation and Replay.
      */
-    private static final RobotType robot = RobotType.ROBOT_SWERVE;
-    private static Constants constants = new SwerveBot2022Constants();
+    private static final RobotType robot = RobotType.ROBOT_SIMBOT;
+    private static Constants constants = new SimBot2022Constants();
 
     private RobotConstants() {
         throw new IllegalStateException("Utility class");

@@ -1,6 +1,6 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -14,7 +14,7 @@ public class ModuleIOSparkMAX implements ModuleIO {
     private final CANSparkMax turnMotor;
     private final RelativeEncoder turnEncoder;
 
-    private final CANCoder turnEncoderAbsolute;
+    private final WPI_CANCoder turnEncoderAbsolute;
 
     private int resetCount = 0;
 
@@ -23,7 +23,7 @@ public class ModuleIOSparkMAX implements ModuleIO {
         turnMotor = new CANSparkMax(turnMotorId, MotorType.kBrushless);
         driveEncoder = driveMotor.getEncoder();
         turnEncoder = turnMotor.getEncoder();
-        turnEncoderAbsolute = new CANCoder(turnAbsEncoderId);
+        turnEncoderAbsolute = new WPI_CANCoder(turnAbsEncoderId);
 
         // Convert rotations to radians
         double rotsToRads = Units.rotationsToRadians(1) * RobotConstants.get().wheelGearRatio().getRotationsPerInput();
@@ -54,14 +54,14 @@ public class ModuleIOSparkMAX implements ModuleIO {
         if (turnEncoder.getVelocity() < Units.degreesToRadians(0.5)) {
             if (++resetCount >= 500) {
                 resetCount = 0;
-                turnEncoder.setPosition(turnEncoderAbsolute.getAbsolutePosition());
+                turnEncoder.setPosition(Units.degreesToRadians(turnEncoderAbsolute.getAbsolutePosition()));
             }
         } else {
             resetCount = 0;
         }
         inputs.turnPosition = turnEncoder.getPosition();
 
-        inputs.turnPositionAbsolute = turnEncoderAbsolute.getAbsolutePosition();
+        inputs.turnPositionAbsolute = Units.degreesToRadians(turnEncoderAbsolute.getAbsolutePosition());
     }
 
     @Override

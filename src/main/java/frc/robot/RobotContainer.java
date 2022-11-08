@@ -8,9 +8,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.drive.DriveWithJoysticks;
 import frc.robot.controllers.CustomController2022;
 import frc.robot.subsystems.drive.Drive;
-import lib.io.gyro.GyroIOADIS16470;
+import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMAXNoAbs;
 import lib.input.ControllerQueue;
+import lib.io.gyro.GyroIO;
+import lib.io.gyro.GyroIOADIS16470;
 
 
 /**
@@ -52,6 +54,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         initializeSubsystems();
+        configureSubsystems();
         // Configure the button bindings
         configureButtonBindings();
         ControllerQueue.getInstance().addController(operatorJoystick);
@@ -77,6 +80,7 @@ public class RobotContainer {
     }
 
     private void initDrive() {
+        System.out.println("Initializing drive");
         switch (RobotConstants.get().robot()) {
             case ROBOT_SWERVE:
                 drive = new Drive( //TODO: Edit module motor ids
@@ -86,6 +90,16 @@ public class RobotContainer {
                         new ModuleIOSparkMAXNoAbs(5, 6),
                         new ModuleIOSparkMAXNoAbs(7, 8));
                 break;
+            case ROBOT_SIMBOT:
+                drive = new Drive(
+                        new GyroIO() {
+                        },
+                        new ModuleIOSim(),
+                        new ModuleIOSim(),
+                        new ModuleIOSim(),
+                        new ModuleIOSim()
+                );
+                break;
             default:
                 drive = null;
         }
@@ -93,14 +107,16 @@ public class RobotContainer {
 
     private void configureDrive() {
         if (drive == null) {
+            System.out.println("Null Drive");
             return;
         }
+        System.out.println("Setting drive with joysticks");
         drive.setDefaultCommand(
                 new DriveWithJoysticks(
                         drive,
-                        driverJoystick::getLeftX,
-                        driverJoystick::getLeftY,
-                        driverJoystick::getRightX,
+                        () -> -driverJoystick.getLeftY(),
+                        () -> -driverJoystick.getLeftX(),
+                        () -> -driverJoystick.getRightX(),
                         () -> true //TODO: have some form of toggle
                 )
         );

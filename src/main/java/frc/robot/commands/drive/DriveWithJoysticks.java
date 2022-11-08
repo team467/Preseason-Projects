@@ -1,10 +1,14 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotConstants;
 import frc.robot.subsystems.drive.Drive;
-import org.littletonrobotics.junction.Logger;
 
 import java.util.function.Supplier;
 
@@ -28,16 +32,54 @@ public class DriveWithJoysticks extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+        System.out.println("GOOD MORNING USA");
+    }
+
+    @Override
     public void execute() {
-        Logger.getInstance().recordOutput("ActiveCommands/DriveWithJoysticks", true);
-        double leftX = MathUtil.applyDeadband(leftXSupplier.get(), DEADBAND);
-        double leftY = MathUtil.applyDeadband(leftYSupplier.get(), DEADBAND);
-        double rightX = MathUtil.applyDeadband(rightXSupplier.get(), DEADBAND);
+        // Get values from double suppliers
+        double leftX = leftXSupplier.get();
+        double leftY = leftYSupplier.get();
+        double rightX = rightXSupplier.get();
 
-        double leftXVelocity = leftX * RobotConstants.get().maxLinearSpeed();
-        double leftYVelocity = leftY * RobotConstants.get().maxLinearSpeed();
-        double rightYVelocity = rightX * RobotConstants.get().maxAngularSpeed();
+        // Get direction and magnitude of linear axes
+        double linearMagnitude = Math.hypot(leftX, leftY);
+        Rotation2d linearDirection = new Rotation2d(leftX, leftY);
 
-        drive.speedDrive(leftXVelocity, leftYVelocity, -rightYVelocity, robotRelativeOverride.get());
+        // Apply deadband
+        linearMagnitude = MathUtil.applyDeadband(linearMagnitude, 0.1);
+        rightX = MathUtil.applyDeadband(rightX, 0.1);
+
+        // Apply squaring
+        linearMagnitude =
+                Math.copySign(linearMagnitude * linearMagnitude, linearMagnitude);
+        rightX = Math.copySign(rightX * rightX, rightX);
+
+        // Apply speed limits
+        linearMagnitude *= 1.0;
+        rightX *= 1.0;
+
+        // Calcaulate new linear components
+        Translation2d linearVelocity =
+                new Pose2d(new Translation2d(), linearDirection)
+                        .transformBy(
+                                new Transform2d(new Translation2d(linearMagnitude, 0.0), new Rotation2d()))
+                        .getTranslation();
+
+        // Convert to meters per second
+        ChassisSpeeds speeds = new ChassisSpeeds(
+                linearVelocity.getX() * RobotConstants.get().maxLinearSpeed(),
+                linearVelocity.getY() * RobotConstants.get().maxLinearSpeed(),
+                rightX * RobotConstants.get().maxAngularSpeed());
+
+        // Convert from field relative
+        if (robotRelativeOverride.get()) {
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds.vxMetersPerSecond,
+                    speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond,
+                    drive.getPose().getRotation());
+        }
+
+        drive.runVelocity(speeds);
     }
 }

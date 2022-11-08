@@ -8,10 +8,10 @@ import frc.robot.constants.controls.GearRatio;
 import frc.robot.constants.controls.SimpleFeedforwardConstant;
 import lib.swerveodometry.SwerveDriveKinematics;
 
-public class SwerveBot2022Constants implements Constants {
+public class SimBot2022Constants implements Constants {
     @Override
     public RobotType robot() {
-        return RobotType.ROBOT_SWERVE;
+        return RobotType.ROBOT_SIMBOT;
     }
 
     @Override
@@ -20,22 +20,24 @@ public class SwerveBot2022Constants implements Constants {
     }
 
     private Translation2d[] moduleTranslations() {
-        return new Translation2d[] {
-                new Translation2d(),
-                new Translation2d(),
-                new Translation2d(),
-                new Translation2d()
+        return new Translation2d[]{
+                new Translation2d(0.65 / 2, 0.65 / 2),
+                new Translation2d(0.65 / 2, -0.65 / 2),
+                new Translation2d(-0.65 / 2, 0.65 / 2),
+                new Translation2d(-0.65 / 2, -0.65 / 2)
         };
     }
 
     @Override
     public double maxLinearSpeed() {
-        return 10.0;
+        return Units.feetToMeters(14.5);
     }
 
     @Override
     public double maxAngularSpeed() {
-        return 1; //TODO
+//        return maxLinearSpeed() / Arrays.stream(moduleTranslations())
+//                .map(translation -> translation.getNorm()).max(Double::compare).get();
+        return Units.feetToMeters(1);
     }
 
     @Override
@@ -50,12 +52,12 @@ public class SwerveBot2022Constants implements Constants {
 
     @Override
     public SimpleFeedforwardConstant driveFF() {
-        return new SimpleFeedforwardConstant(0, 0, 0);
+        return new SimpleFeedforwardConstant(0.116970, 0.133240);
     }
 
     @Override
     public FeedbackConstant turnFB() {
-        return new FeedbackConstant(1.0, 0.1);
+        return new FeedbackConstant(23.0, 0.0);
     }
 
     @Override
