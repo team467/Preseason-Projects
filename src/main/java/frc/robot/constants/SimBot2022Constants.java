@@ -2,71 +2,112 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import frc.robot.constants.controls.FeedbackConstant;
 import frc.robot.constants.controls.GearRatio;
 import frc.robot.constants.controls.SimpleFeedforwardConstant;
-import lib.swerveodometry.SwerveDriveKinematics;
 
 public class SimBot2022Constants implements Constants {
-    @Override
-    public RobotType robot() {
-        return RobotType.ROBOT_SIMBOT;
-    }
 
-    @Override
-    public String logFolder() {
-        return null;
-    }
+  @Override
+  public RobotType robot() {
+    return RobotType.ROBOT_SIMBOT;
+  }
 
-    private Translation2d[] moduleTranslations() {
-        return new Translation2d[]{
-                new Translation2d(0.65 / 2, 0.65 / 2),
-                new Translation2d(0.65 / 2, -0.65 / 2),
-                new Translation2d(-0.65 / 2, 0.65 / 2),
-                new Translation2d(-0.65 / 2, -0.65 / 2)
-        };
-    }
+  @Override
+  public String logFolder() {
+    return null;
+  }
 
-    @Override
-    public double maxLinearSpeed() {
-        return Units.feetToMeters(14.5);
-    }
+  private Translation2d[] moduleTranslations() {
+    return new Translation2d[]{
+        new Translation2d(0.65 / 2, 0.65 / 2),
+        new Translation2d(0.65 / 2, -0.65 / 2),
+        new Translation2d(-0.65 / 2, 0.65 / 2),
+        new Translation2d(-0.65 / 2, -0.65 / 2)
+    };
+  }
 
-    @Override
-    public double maxAngularSpeed() {
+  @Override
+  public double maxLinearSpeed() {
+    return Units.feetToMeters(14.5);
+  }
+
+  @Override
+  public double maxAngularSpeed() {
 //        return maxLinearSpeed() / Arrays.stream(moduleTranslations())
 //                .map(translation -> translation.getNorm()).max(Double::compare).get();
-        return Units.feetToMeters(1);
-    }
+    return Units.degreesToRadians(1);
+  }
 
-    @Override
-    public double wheelDiameter() {
-        return Units.inchesToMeters(4);
-    }
+  @Override
+  public double moduleWheelDiameter() {
+    return Units.inchesToMeters(4);
+  }
 
-    @Override
-    public GearRatio wheelGearRatio() {
-        return new GearRatio(6.75, 1); // SDS L2
-    }
+  @Override
+  public GearRatio moduleDriveGearRatio() {
+    return new GearRatio(6.75, 1); // SDS L2
+  }
 
-    @Override
-    public SimpleFeedforwardConstant driveFF() {
-        return new SimpleFeedforwardConstant(0.116970, 0.133240);
-    }
+  @Override
+  public GearRatio moduleTurnGearRatio() {
+    return new GearRatio(12.8, 1);
+  }
 
-    @Override
-    public FeedbackConstant turnFB() {
-        return new FeedbackConstant(23.0, 0.0);
-    }
+  @Override
+  public SimpleFeedforwardConstant moduleDriveFF() {
+    return new SimpleFeedforwardConstant(0.116970, 0.133240);
+  }
 
-    @Override
-    public SwerveDriveKinematics swerveKinematics() {
-        return new SwerveDriveKinematics(moduleTranslations());
-    }
+  @Override
+  public SimpleFeedforwardConstant moduleTurnFF() {
+    return null;
+  }
 
-    @Override
-    public Rotation2d absoluteAngleOffset() {
-        return new Rotation2d();
-    }
+  @Override
+  public FeedbackConstant moduleTurnFB() {
+    return new FeedbackConstant(23.0, 0.0);
+  }
+
+  @Override
+  public SwerveDriveKinematics kinematics() {
+    return new SwerveDriveKinematics(moduleTranslations());
+  }
+
+  @Override
+  public Rotation2d[] absoluteAngleOffset() {
+    return new Rotation2d[]{new Rotation2d()};
+  }
+
+  @Override
+  public double chassisDriveMaxVelocity() {
+    return maxLinearSpeed();
+  }
+
+  @Override
+  public double chassisDriveMaxAcceleration() {
+    return 0;
+  }
+
+  @Override
+  public double chassisTurnMaxVelocity() {
+    return maxLinearSpeed();
+  }
+
+  @Override
+  public double chassisTurnMaxAcceleration() {
+    return 0;
+  }
+
+  @Override
+  public FeedbackConstant chassisDriveFB() {
+    return null;
+  }
+
+  @Override
+  public FeedbackConstant chassisTurnFB() {
+    return null;
+  }
 }

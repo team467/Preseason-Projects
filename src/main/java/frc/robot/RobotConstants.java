@@ -1,10 +1,8 @@
 package frc.robot;
 
 import frc.robot.constants.Constants;
-import frc.robot.constants.Constants.RobotType;
 import frc.robot.constants.SimBot2022Constants;
 import frc.robot.constants.SwerveBot2022Constants;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,7 +12,6 @@ public class RobotConstants {
     /**
      * TODO: Manually change this for simulation and Replay.
      */
-    private static final RobotType robot = RobotType.ROBOT_SIMBOT;
     private static Constants constants = new SimBot2022Constants();
 
     private RobotConstants() {
@@ -22,10 +19,11 @@ public class RobotConstants {
     }
 
     private static void initConstants() throws IOException {
-        if (robot == null) {
+        if (constants == null) {
             File file = new File(System.getProperty("user.home") + "/robot");
             if (!file.exists()) {
-                throw new IOException("No roborio name file found, add it or change robot var manually.");
+                throw new IOException(
+                    "No roborio name file found, add it or change robot var manually.");
             }
             FileReader reader = new FileReader(file);
             try (BufferedReader br = new BufferedReader(reader)) {

@@ -1,82 +1,99 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.constants.controls.FeedbackConstant;
 import frc.robot.constants.controls.GearRatio;
 import frc.robot.constants.controls.SimpleFeedforwardConstant;
-import lib.swerveodometry.SwerveDriveKinematics;
 
 public interface Constants {
-    /**
-     * @return Robot type/name
-     */
-    RobotType robot();
 
-    /**
-     * @return Folder to put logs into (nullable)
-     */
-    String logFolder();
+  /**
+   * @return Robot type/name
+   */
+  RobotType robot();
 
-    /**
-     * @return Check if robot is real, sim, or replay
-     */
-    default Mode mode() {
-        switch (robot()) {
-            case ROBOT_SWERVE:
-                return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+  /**
+   * @return Folder to put logs into (nullable)
+   */
+  String logFolder();
 
-            case ROBOT_SIMBOT:
-                return Mode.SIM;
+  /**
+   * @return Check if robot is real, sim, or replay
+   */
+  default Mode mode() {
+    switch (robot()) {
+      case ROBOT_SWERVE:
+        return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
-            default:
-                return Mode.REAL;
+      case ROBOT_SIMBOT:
+        return Mode.SIM;
 
-        }
+      default:
+        return Mode.REAL;
+
     }
+  }
 
-    enum RobotType {
-        ROBOT_SWERVE, ROBOT_SIMBOT
-    }
+  enum RobotType {
+    ROBOT_SWERVE, ROBOT_SIMBOT
+  }
 
-    enum Mode {
-        REAL, REPLAY, SIM
-    }
+  enum Mode {
+    REAL, REPLAY, SIM
+  }
 
-    /**
-     * @return Max speed in m/s
-     */
-    double maxLinearSpeed();
+  /**
+   * @return Max speed in m/s
+   */
+  double maxLinearSpeed();
 
-    double maxAngularSpeed();
+  double maxAngularSpeed();
 
-    /**
-     * @return Wheel diameter in m
-     */
-    double wheelDiameter();
+  /**
+   * @return Wheel diameter in m
+   */
+  double moduleWheelDiameter();
 
-    /**
-     * @return Wheel gear ratio
-     */
-    GearRatio wheelGearRatio();
+  /**
+   * @return Wheel gear ratio
+   */
+  GearRatio moduleDriveGearRatio();
 
-    /**
-     * @return Drive feedforward
-     */
-    SimpleFeedforwardConstant driveFF();
+  GearRatio moduleTurnGearRatio();
 
-    /**
-     * @return Turn feedback
-     */
-    FeedbackConstant turnFB();
+  /**
+   * @return Drive feedforward
+   */
+  SimpleFeedforwardConstant moduleDriveFF();
 
-    /**
-     * @return Swerve kinematics
-     */
-    SwerveDriveKinematics swerveKinematics();
+  SimpleFeedforwardConstant moduleTurnFF();
 
-    /**
-     * @return Absolute angle offset
-     */
-    Rotation2d absoluteAngleOffset();
+  /**
+   * @return Turn feedback
+   */
+  FeedbackConstant moduleTurnFB();
+
+  /**
+   * @return Swerve kinematics
+   */
+  SwerveDriveKinematics kinematics();
+
+  /**
+   * @return Absolute angle offset
+   */
+  Rotation2d[] absoluteAngleOffset();
+
+  double chassisDriveMaxVelocity();
+
+  double chassisDriveMaxAcceleration();
+
+  double chassisTurnMaxVelocity();
+
+  double chassisTurnMaxAcceleration();
+
+  FeedbackConstant chassisDriveFB();
+
+  FeedbackConstant chassisTurnFB();
 }

@@ -3,14 +3,13 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotConstants;
 import frc.robot.subsystems.drive.Drive;
-
 import java.util.function.Supplier;
+import lib.utils.GeomUtils;
 
 public class DriveWithJoysticks extends CommandBase {
     private final Drive drive;
@@ -29,11 +28,6 @@ public class DriveWithJoysticks extends CommandBase {
         this.robotRelativeOverride = robotRelativeOverride;
 
         addRequirements(drive);
-    }
-
-    @Override
-    public void initialize() {
-        System.out.println("GOOD MORNING USA");
     }
 
     @Override
@@ -56,7 +50,7 @@ public class DriveWithJoysticks extends CommandBase {
                 Math.copySign(linearMagnitude * linearMagnitude, linearMagnitude);
         rightX = Math.copySign(rightX * rightX, rightX);
 
-        // Apply speed limits
+        // Apply speed limits //TODO: Custom limits
         linearMagnitude *= 1.0;
         rightX *= 1.0;
 
@@ -64,7 +58,7 @@ public class DriveWithJoysticks extends CommandBase {
         Translation2d linearVelocity =
                 new Pose2d(new Translation2d(), linearDirection)
                         .transformBy(
-                                new Transform2d(new Translation2d(linearMagnitude, 0.0), new Rotation2d()))
+                            GeomUtils.transformFromTranslation(linearMagnitude, 0))
                         .getTranslation();
 
         // Convert to meters per second
