@@ -1,6 +1,5 @@
 package frc.robot.controllers;
 
-
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import lib.input.ControllerCommandFactory;
@@ -49,9 +48,14 @@ public class CustomController2022 extends CustomControllerBase {
   public CustomController2022(int port) {
     super(port);
     addCommandToQueue(ControllerCommandFactory.setAllLEDBrightness(0x80));
-    addCommandToQueue(ControllerCommandFactory.setAllLEDEffect(ControllerDataProtocol.LightingEffect.Static));
-    addCommandToQueue(ControllerCommandFactory.setLEDSectionBaseColor(Sections.RING_TOP.value, Color.kRed));
-    addCommandToQueue(ControllerCommandFactory.setLEDSectionBaseColor(Sections.RING_BOTTOM.value, Color.kBlue));
-    addCommandToQueue(ControllerCommandFactory.setLEDSectionEffectSpaced(Sections.UNDER.value, ControllerDataProtocol.LightingEffect.ColorCycle));
+    addCommandToQueue(
+        ControllerCommandFactory.setAllLEDEffect(ControllerDataProtocol.LightingEffect.Static));
+    addCommandToQueue(
+        ControllerCommandFactory.setLEDSectionBaseColor(Sections.RING_TOP.value, Color.kRed));
+    addCommandToQueue(
+        ControllerCommandFactory.setLEDSectionBaseColor(Sections.RING_BOTTOM.value, Color.kBlue));
+    addCommandToQueue(
+        ControllerCommandFactory.setLEDSectionEffectSpaced(
+            Sections.UNDER.value, ControllerDataProtocol.LightingEffect.ColorCycle));
   }
 }

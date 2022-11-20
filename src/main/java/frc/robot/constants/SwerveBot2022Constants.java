@@ -9,34 +9,31 @@ import frc.robot.constants.controls.GearRatio;
 import frc.robot.constants.controls.SimpleFeedforwardConstant;
 
 public class SwerveBot2022Constants implements Constants {
-    @Override
-    public RobotType robot() {
-        return RobotType.ROBOT_SWERVE;
-    }
+  @Override
+  public RobotType robot() {
+    return RobotType.ROBOT_SWERVE;
+  }
 
-    @Override
-    public String logFolder() {
-      return "/media/sda1";
-    }
+  @Override
+  public String logFolder() {
+    return "/media/sda1";
+  }
 
-    private Translation2d[] moduleTranslations() {
-        return new Translation2d[] {
-                new Translation2d(),
-                new Translation2d(),
-                new Translation2d(),
-                new Translation2d()
-        };
-    }
+  private Translation2d[] moduleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(), new Translation2d(), new Translation2d(), new Translation2d()
+    };
+  }
 
-    @Override
-    public double maxLinearSpeed() {
-      return 3.0;
-    }
+  @Override
+  public double maxLinearSpeed() {
+    return 3.0;
+  }
 
-    @Override
-    public double maxAngularSpeed() {
-        return 1; //TODO
-    }
+  @Override
+  public double maxAngularSpeed() {
+    return 1; // TODO
+  }
 
   @Override
   public double moduleWheelDiameter() {
@@ -75,8 +72,9 @@ public class SwerveBot2022Constants implements Constants {
 
   @Override
   public Rotation2d[] absoluteAngleOffset() {
-    return new Rotation2d[]{new Rotation2d(0), new Rotation2d(0), new Rotation2d(0),
-        new Rotation2d(0)};
+    return new Rotation2d[] {
+      new Rotation2d(0), new Rotation2d(0), new Rotation2d(0), new Rotation2d(0)
+    };
   }
 
   @Override

@@ -12,7 +12,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the methods corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -65,7 +64,7 @@ public class Robot extends LoggedRobot {
       case SIM:
         logger.addDataReceiver(new NT4Publisher());
         logger.addDataReceiver(
-            new WPILOGWriter("/home/admlv/Documents/Preseason-Project/logging")); //for now
+            new WPILOGWriter("/home/admlv/Documents/Preseason-Project/logging")); // for now
         break;
 
       case REPLAY:
@@ -82,13 +81,12 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
   }
 
-
   /**
    * This method is called every robot packet, no matter the mode. Use this for items like
    * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic methods, but before LiveWindow and
-   * SmartDashboard integrated updating.
+   * <p>This runs after the mode specific periodic methods, but before LiveWindow and SmartDashboard
+   * integrated updating.
    */
   @Override
   public void robotPeriodic() {
@@ -96,31 +94,24 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     // Log scheduled commands
-    Logger.getInstance().recordOutput("ActiveCommands/Scheduler",
-        NetworkTableInstance.getDefault()
-            .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
-            .getStringArray(new String[]{}));
+    Logger.getInstance()
+        .recordOutput(
+            "ActiveCommands/Scheduler",
+            NetworkTableInstance.getDefault()
+                .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
+                .getStringArray(new String[] {}));
 
     Threads.setCurrentThreadPriority(true, 10);
   }
 
-
-  /**
-   * This method is called once each time the robot enters Disabled mode.
-   */
+  /** This method is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {
-  }
-
+  public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
-
-  /**
-   * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
-   */
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
@@ -131,14 +122,9 @@ public class Robot extends LoggedRobot {
     }
   }
 
-
-  /**
-   * This method is called periodically during autonomous.
-   */
+  /** This method is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-  }
-
+  public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {
@@ -151,14 +137,9 @@ public class Robot extends LoggedRobot {
     }
   }
 
-
-  /**
-   * This method is called periodically during operator control.
-   */
+  /** This method is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-  }
-
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
@@ -166,11 +147,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().cancelAll();
   }
 
-
-  /**
-   * This method is called periodically during test mode.
-   */
+  /** This method is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 }

@@ -8,7 +8,7 @@ import edu.wpi.first.math.controller.RamseteController;
  * <p>The Ramsete Controller is a trajectory tracker that is built in to WPILib.
  *
  * @see <a
- * href="https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object">...</a>
+ *     href="https://docs.wpilib.org/en/latest/docs/software/advanced-controls/trajectories/ramsete.html#constructing-the-ramsete-controller-object">...</a>
  */
 public class RamseteConstant {
   private final double kB;

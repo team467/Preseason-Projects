@@ -17,7 +17,6 @@ import lib.input.ControllerQueue;
 import lib.io.gyro.GyroIO;
 import lib.io.gyro.GyroIOADIS16470;
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -35,24 +34,22 @@ public class RobotContainer {
 
   // Operator Controller
   private final CustomController2022 operatorJoystick = new CustomController2022(1);
-  private final JoystickButton operatorClimberLimits = operatorJoystick.getButton(
-      CustomController2022.Buttons.CLIMBER_LIMITS);
-  private final JoystickButton operatorShooterAuto = operatorJoystick.getButton(
-      CustomController2022.Buttons.SHOOTER_AUTO);
-  private final JoystickButton operatorEverything = operatorJoystick.getButton(
-      CustomController2022.Buttons.EVERYTHING);
-  private final JoystickButton operatorShoot = operatorJoystick.getButton(
-      CustomController2022.Buttons.SHOOT);
-  private final JoystickButton operatorClimberLock = operatorJoystick.getButton(
-      CustomController2022.Buttons.CLIMBER_LOCK);
-  private final JoystickButton operatorClimberUp = operatorJoystick.getButton(
-      CustomController2022.Buttons.CLIMBER_UP);
-  private final JoystickButton operatorClimberDown = operatorJoystick.getButton(
-      CustomController2022.Buttons.CLIMBER_DOWN);
+  private final JoystickButton operatorClimberLimits =
+      operatorJoystick.getButton(CustomController2022.Buttons.CLIMBER_LIMITS);
+  private final JoystickButton operatorShooterAuto =
+      operatorJoystick.getButton(CustomController2022.Buttons.SHOOTER_AUTO);
+  private final JoystickButton operatorEverything =
+      operatorJoystick.getButton(CustomController2022.Buttons.EVERYTHING);
+  private final JoystickButton operatorShoot =
+      operatorJoystick.getButton(CustomController2022.Buttons.SHOOT);
+  private final JoystickButton operatorClimberLock =
+      operatorJoystick.getButton(CustomController2022.Buttons.CLIMBER_LOCK);
+  private final JoystickButton operatorClimberUp =
+      operatorJoystick.getButton(CustomController2022.Buttons.CLIMBER_UP);
+  private final JoystickButton operatorClimberDown =
+      operatorJoystick.getButton(CustomController2022.Buttons.CLIMBER_DOWN);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     initializeSubsystems();
     configureSubsystems();
@@ -71,13 +68,14 @@ public class RobotContainer {
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses
-   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-   * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
     // Add button to command mappings here.
-    // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
+    // See
+    // https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
   }
 
   private void initDrive() {
@@ -85,22 +83,22 @@ public class RobotContainer {
     if (RobotConstants.get().mode() != Mode.REPLAY) {
       switch (RobotConstants.get().robot()) {
         case ROBOT_SWERVE:
-          drive = new Drive( //TODO: Edit module motor ids
-              new GyroIOADIS16470(),
-              new ModuleIOSparkMAX(1, 2, 3),
-              new ModuleIOSparkMAX(3, 4, 5),
-              new ModuleIOSparkMAX(5, 6, 7),
-              new ModuleIOSparkMAX(7, 8, 9));
+          drive =
+              new Drive( // TODO: Edit module motor ids
+                  new GyroIOADIS16470(),
+                  new ModuleIOSparkMAX(1, 2, 3),
+                  new ModuleIOSparkMAX(3, 4, 5),
+                  new ModuleIOSparkMAX(5, 6, 7),
+                  new ModuleIOSparkMAX(7, 8, 9));
           break;
         case ROBOT_SIMBOT:
-          drive = new Drive(
-              new GyroIO() {
-              },
-              new ModuleIOSim(),
-              new ModuleIOSim(),
-              new ModuleIOSim(),
-              new ModuleIOSim()
-          );
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim());
           break;
         default:
           drive = null;
@@ -108,9 +106,13 @@ public class RobotContainer {
     }
 
     if (drive == null) {
-      drive = new Drive(new GyroIO() {
-      }, new ModuleIOReplay(), new ModuleIOReplay(),
-          new ModuleIOReplay(), new ModuleIOReplay());
+      drive =
+          new Drive(
+              new GyroIO() {},
+              new ModuleIOReplay(),
+              new ModuleIOReplay(),
+              new ModuleIOReplay(),
+              new ModuleIOReplay());
     }
   }
 
@@ -124,9 +126,8 @@ public class RobotContainer {
             () -> -driverJoystick.getLeftY(),
             () -> -driverJoystick.getLeftX(),
             () -> -driverJoystick.getRightX(),
-            () -> true //TODO: have some form of toggle
-        )
-    );
+            () -> true // TODO: have some form of toggle
+            ));
   }
 
   /**

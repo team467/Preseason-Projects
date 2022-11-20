@@ -21,11 +21,11 @@ public class SimBot2022Constants implements Constants {
   }
 
   private Translation2d[] moduleTranslations() {
-    return new Translation2d[]{
-        new Translation2d(0.65 / 2, 0.65 / 2),
-        new Translation2d(0.65 / 2, -0.65 / 2),
-        new Translation2d(-0.65 / 2, 0.65 / 2),
-        new Translation2d(-0.65 / 2, -0.65 / 2)
+    return new Translation2d[] {
+      new Translation2d(0.65 / 2, 0.65 / 2),
+      new Translation2d(0.65 / 2, -0.65 / 2),
+      new Translation2d(-0.65 / 2, 0.65 / 2),
+      new Translation2d(-0.65 / 2, -0.65 / 2)
     };
   }
 
@@ -36,8 +36,8 @@ public class SimBot2022Constants implements Constants {
 
   @Override
   public double maxAngularSpeed() {
-//        return maxLinearSpeed() / Arrays.stream(moduleTranslations())
-//                .map(translation -> translation.getNorm()).max(Double::compare).get();
+    //        return maxLinearSpeed() / Arrays.stream(moduleTranslations())
+    //                .map(translation -> translation.getNorm()).max(Double::compare).get();
     return Units.degreesToRadians(1);
   }
 
@@ -78,7 +78,7 @@ public class SimBot2022Constants implements Constants {
 
   @Override
   public Rotation2d[] absoluteAngleOffset() {
-    return new Rotation2d[]{new Rotation2d()};
+    return new Rotation2d[] {new Rotation2d()};
   }
 
   @Override

@@ -4,9 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
-/**
- * Simple constant wrapper for a PIDController controller
- */
+/** Simple constant wrapper for a PIDController controller */
 public class FeedbackConstant {
   private final double kP;
   private final double kD;

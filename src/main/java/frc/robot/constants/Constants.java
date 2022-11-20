@@ -32,16 +32,18 @@ public interface Constants {
 
       default:
         return Mode.REAL;
-
     }
   }
 
   enum RobotType {
-    ROBOT_SWERVE, ROBOT_SIMBOT
+    ROBOT_SWERVE,
+    ROBOT_SIMBOT
   }
 
   enum Mode {
-    REAL, REPLAY, SIM
+    REAL,
+    REPLAY,
+    SIM
   }
 
   /**
