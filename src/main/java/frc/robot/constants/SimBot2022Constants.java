@@ -7,6 +7,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.constants.controls.FeedbackConstant;
 import frc.robot.constants.controls.GearRatio;
 import frc.robot.constants.controls.SimpleFeedforwardConstant;
+import java.util.Arrays;
 
 public class SimBot2022Constants implements Constants {
 
@@ -36,14 +37,16 @@ public class SimBot2022Constants implements Constants {
 
   @Override
   public double maxAngularSpeed() {
-    //        return maxLinearSpeed() / Arrays.stream(moduleTranslations())
-    //                .map(translation -> translation.getNorm()).max(Double::compare).get();
-    return Units.degreesToRadians(1);
+    return maxLinearSpeed()
+        / Arrays.stream(moduleTranslations())
+            .map(translation -> translation.getNorm())
+            .max(Double::compare)
+            .get();
   }
 
   @Override
   public double moduleWheelDiameter() {
-    return Units.inchesToMeters(4);
+    return Units.inchesToMeters(2);
   }
 
   @Override
@@ -63,7 +66,7 @@ public class SimBot2022Constants implements Constants {
 
   @Override
   public SimpleFeedforwardConstant moduleTurnFF() {
-    return null;
+    return new SimpleFeedforwardConstant(0, 0);
   }
 
   @Override
@@ -83,31 +86,31 @@ public class SimBot2022Constants implements Constants {
 
   @Override
   public double chassisDriveMaxVelocity() {
-    return maxLinearSpeed();
+    return Units.inchesToMeters(150.0);
   }
 
   @Override
   public double chassisDriveMaxAcceleration() {
-    return 0;
+    return Units.inchesToMeters(200);
   }
 
   @Override
   public double chassisTurnMaxVelocity() {
-    return maxLinearSpeed();
+    return Units.inchesToMeters(150.0);
   }
 
   @Override
   public double chassisTurnMaxAcceleration() {
-    return 0;
+    return Units.inchesToMeters(200);
   }
 
   @Override
   public FeedbackConstant chassisDriveFB() {
-    return null;
+    return new FeedbackConstant(0, 0);
   }
 
   @Override
   public FeedbackConstant chassisTurnFB() {
-    return null;
+    return new FeedbackConstant(0, 0);
   }
 }

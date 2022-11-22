@@ -12,8 +12,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
-import java.util.ArrayList;
-import java.util.List;
 import lib.io.gyro.GyroIO;
 import org.littletonrobotics.junction.Logger;
 
@@ -93,7 +91,6 @@ public class Drive extends SubsystemBase {
     for (int i = 0; i < 4; i++) {
       moduleIOs[i].updateInputs(moduleIOInputs[i]);
       Logger.getInstance().processInputs("Drive/Module" + i, moduleIOInputs[i]);
-      Logger.getInstance().recordOutput("TurnPositions/" + i, moduleIOInputs[i].turnPosition);
     }
 
     // Update angle measurements
@@ -155,11 +152,12 @@ public class Drive extends SubsystemBase {
       }
 
       // Log all module setpoints
-      logModuleStates("SwerveModuleStates/Setpoints", setpointStates);
-      logModuleStates("SwerveModuleStates/SetpointsOptimized", setpointStatesOptimized);
+      Logger.getInstance().recordOutput("SwerveModuleStates/Setpoints", setpointStates);
+      Logger.getInstance()
+          .recordOutput("SwerveModuleStates/SetpointsOptimized", setpointStatesOptimized);
     }
 
-    SwerveModuleState[] measuredStates = new SwerveModuleState[] {null, null, null, null};
+    SwerveModuleState[] measuredStates = new SwerveModuleState[4];
 
     for (int i = 0; i < 4; i++) {
       measuredStates[i] =
@@ -180,31 +178,16 @@ public class Drive extends SubsystemBase {
       odometry.update(Rotation2d.fromDegrees(gyroIOInputs.angle), measuredPositions);
     } else {
       angle +=
-          RobotConstants.get().kinematics().toChassisSpeeds(measuredStates).omegaRadiansPerSecond;
+          RobotConstants.get().kinematics().toChassisSpeeds(measuredStates).omegaRadiansPerSecond
+              * 0.02;
+      //      angle += setpoint.omegaRadiansPerSecond;
       odometry.update(new Rotation2d(angle), measuredPositions);
     }
     // Log measured states
-    logModuleStates("SwerveModuleStates/Measured", measuredStates);
+    Logger.getInstance().recordOutput("SwerveModuleStates/Measured", measuredStates);
 
     // Log odometry pose
     Logger.getInstance().recordOutput("Odometry", getPose());
-  }
-
-  /**
-   * Log robot swerve module states for AdvantageScope (thanks Mechanical Advantage!)
-   *
-   * @param key The name of the field to record. It will be stored under "/RealOutputs" or
-   *     "/ReplayOutputs"
-   * @param states The states of the wheels.
-   */
-  private void logModuleStates(String key, SwerveModuleState[] states) {
-    List<Double> dataArray = new ArrayList<Double>();
-    for (int i = 0; i < 4; i++) {
-      dataArray.add(states[i].angle.getRadians());
-      dataArray.add(states[i].speedMetersPerSecond);
-    }
-    Logger.getInstance()
-        .recordOutput(key, dataArray.stream().mapToDouble(Double::doubleValue).toArray());
   }
 
   /**
@@ -228,6 +211,21 @@ public class Drive extends SubsystemBase {
    */
   public Pose2d getPose() {
     return odometry.getPoseMeters();
+  }
+
+  public void setPose(Pose2d pose) {
+    SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+    for (int i = 0; i < 4; i++) {
+      modulePositions[i] =
+          new SwerveModulePosition(
+              moduleIOInputs[i].drivePosition,
+              new Rotation2d(moduleIOInputs[i].turnPositionAbsolute));
+    }
+    if (gyroIOInputs.connected) {
+      odometry.resetPosition(new Rotation2d(gyroIOInputs.angle), modulePositions, pose);
+    } else {
+      odometry.resetPosition(new Rotation2d(angle), modulePositions, pose);
+    }
   }
 
   /**

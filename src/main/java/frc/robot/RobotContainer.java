@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,12 +10,15 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.drive.DriveWithJoysticks;
+import frc.robot.commands.drive.GoToTrajectory;
 import frc.robot.constants.Constants.Mode;
 import frc.robot.controllers.CustomController2022;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.ModuleIOReplay;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMAX;
+import java.util.List;
+import lib.holonomictrajectory.Waypoint;
 import lib.input.ControllerQueue;
 import lib.io.gyro.GyroIO;
 import lib.io.gyro.GyroIOADIS16470;
@@ -136,7 +142,12 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return autoCommand;
+    return new GoToTrajectory(
+        drive,
+        List.of(
+            Waypoint.fromHolonomicPose(new Pose2d()),
+            new Waypoint(new Translation2d(1, 1)),
+            new Waypoint(new Translation2d(2, -1)),
+            new Waypoint(new Translation2d(3, 0), null, Rotation2d.fromDegrees(90))));
   }
 }

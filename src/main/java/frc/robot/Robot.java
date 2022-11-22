@@ -63,8 +63,9 @@ public class Robot extends LoggedRobot {
         break;
       case SIM:
         logger.addDataReceiver(new NT4Publisher());
-        logger.addDataReceiver(
-            new WPILOGWriter("/home/admlv/Documents/Preseason-Project/logging")); // for now
+        //        logger.addDataReceiver(
+        //            new WPILOGWriter("/home/admlv/Documents/Preseason-Project/logging")); // for
+        // now
         break;
 
       case REPLAY:
