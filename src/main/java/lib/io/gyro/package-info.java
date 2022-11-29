@@ -1,4 +1,2 @@
-/**
- * A package containing simple implementations for Gyros.
- */
+/** A package containing simple implementations for Gyros. */
 package lib.io.gyro;

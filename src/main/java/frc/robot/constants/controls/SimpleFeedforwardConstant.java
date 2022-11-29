@@ -6,9 +6,7 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 
-/**
- * Simple constant wrapper for a SimpleFeedforward controller
- */
+/** Simple constant wrapper for a SimpleFeedforward controller */
 public class SimpleFeedforwardConstant {
   private final double kS;
   private final double kV;

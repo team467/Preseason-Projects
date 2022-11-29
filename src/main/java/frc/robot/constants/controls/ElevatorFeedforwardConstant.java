@@ -2,9 +2,7 @@ package frc.robot.constants.controls;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 
-/**
- * Simple constant wrapper for a ElevatorFeedforward controller
- */
+/** Simple constant wrapper for a ElevatorFeedforward controller */
 public class ElevatorFeedforwardConstant {
   private final double kS;
   private final double kG;

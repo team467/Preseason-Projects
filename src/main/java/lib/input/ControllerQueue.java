@@ -4,57 +4,54 @@ import java.util.ArrayList;
 
 public class ControllerQueue {
 
-    private static volatile ControllerQueue INSTANCE = null;
+  private static volatile ControllerQueue INSTANCE = null;
 
-    private final ArrayList<CustomControllerBase> controllers = new ArrayList<>();
+  private final ArrayList<CustomControllerBase> controllers = new ArrayList<>();
 
-    /**
-     * Gets the instance of the controller queue
-     *
-     * @return the controller queue
-     */
-    public static ControllerQueue getInstance() {
+  /**
+   * Gets the instance of the controller queue
+   *
+   * @return the controller queue
+   */
+  public static ControllerQueue getInstance() {
+    if (INSTANCE == null) {
+      synchronized (ControllerQueue.class) {
         if (INSTANCE == null) {
-            synchronized (ControllerQueue.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new ControllerQueue();
-                }
-            }
+          INSTANCE = new ControllerQueue();
         }
-
-        return INSTANCE;
+      }
     }
 
-    /**
-     * @see #getInstance()
-     */
-    private ControllerQueue() {
-    }
+    return INSTANCE;
+  }
 
-    /**
-     * Adds a new custom controller to the queue.
-     *
-     * @param controller a custom controller
-     */
-    public void addController(CustomControllerBase controller) {
-        controllers.add(controller);
-    }
+  /**
+   * @see #getInstance()
+   */
+  private ControllerQueue() {}
 
-    /**
-     * Updates the queue of all controllers.
-     */
-    @SuppressWarnings("Convert2MethodRef")
-    public void run() {
-        controllers.forEach(controller -> controller.updateQueue());
-    }
+  /**
+   * Adds a new custom controller to the queue.
+   *
+   * @param controller a custom controller
+   */
+  public void addController(CustomControllerBase controller) {
+    controllers.add(controller);
+  }
 
-    /**
-     * Gets a controller from the controller list.
-     *
-     * @param index the controller id
-     * @return the controller
-     */
-    public CustomControllerBase get(int index) {
-        return controllers.get(index);
-    }
+  /** Updates the queue of all controllers. */
+  @SuppressWarnings("Convert2MethodRef")
+  public void run() {
+    controllers.forEach(controller -> controller.updateQueue());
+  }
+
+  /**
+   * Gets a controller from the controller list.
+   *
+   * @param index the controller id
+   * @return the controller
+   */
+  public CustomControllerBase get(int index) {
+    return controllers.get(index);
+  }
 }

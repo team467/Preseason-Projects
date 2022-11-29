@@ -1,8 +1,6 @@
 package frc.robot.constants.controls;
 
-/**
- * Fancy constant wrapper for a gear ratio
- */
+/** Fancy constant wrapper for a gear ratio */
 public class GearRatio {
   private final double output;
   private final double input;
@@ -11,16 +9,14 @@ public class GearRatio {
    * Configure a gear ratio
    *
    * @param output gear output
-   * @param input  gear input
+   * @param input gear input
    */
   public GearRatio(double output, double input) {
     this.output = output;
     this.input = input;
   }
 
-  /**
-   * Configure a 1:1 gear ration
-   */
+  /** Configure a 1:1 gear ration */
   public GearRatio() {
     this(1, 1);
   }

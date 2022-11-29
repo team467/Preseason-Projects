@@ -2,9 +2,7 @@ package frc.robot.constants.controls;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 
-/**
- * Simple constant wrapper for a ArmFeedforward controller
- */
+/** Simple constant wrapper for a ArmFeedforward controller */
 public class ArmFeedforwardConstant {
   private final double kS;
   private final double kCos;
@@ -14,10 +12,10 @@ public class ArmFeedforwardConstant {
   /**
    * Configures a ArmFeedforward constant
    *
-   * @param kS   static gain
+   * @param kS static gain
    * @param kCos gravity gain
-   * @param kV   velocity gain
-   * @param kA   acceleration gain
+   * @param kV velocity gain
+   * @param kA acceleration gain
    */
   public ArmFeedforwardConstant(double kS, double kCos, double kV, double kA) {
     this.kS = kS;
@@ -29,9 +27,9 @@ public class ArmFeedforwardConstant {
   /**
    * Configures a ArmFeedforward constant
    *
-   * @param kS   static gain
+   * @param kS static gain
    * @param kCos gravity gain
-   * @param kV   velocity gain
+   * @param kV velocity gain
    */
   public ArmFeedforwardConstant(double kS, double kCos, double kV) {
     this(kS, kCos, kV, 0);
