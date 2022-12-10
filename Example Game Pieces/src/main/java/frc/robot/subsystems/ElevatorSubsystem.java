@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ElevatorSubsystem extends SubsystemBase {
@@ -55,6 +56,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     position = 0;
     encoder.reset();
     encoder.setDistancePerRotation(ELEVATOR_DISTANCE_PER_ROTATION);
+
   }
 
   public State state() {
@@ -100,7 +102,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     stateMachine();
-    motor.set(state.speed);
   }
 
   @Override
