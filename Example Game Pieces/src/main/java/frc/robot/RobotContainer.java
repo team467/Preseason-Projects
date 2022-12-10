@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.StopElevatorCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,14 +19,17 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ElevatorSubsystem m_exampleSubsystem = new ElevatorSubsystem();
+  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
 
-  private final StopElevatorCommand m_autoCommand = new StopElevatorCommand(m_exampleSubsystem);
+  private final StopElevatorCommand stopElevatorCommand = new StopElevatorCommand(elevatorSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    CommandScheduler.getInstance().setDefaultCommand(elevatorSubsystem, stopElevatorCommand);
+
   }
 
   /**
@@ -43,6 +47,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return stopElevatorCommand;
   }
 }
