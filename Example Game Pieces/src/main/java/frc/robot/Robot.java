@@ -5,9 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.MoveElevatorUpCommand;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.UserInterfaceSubsystem;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,6 +28,17 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+
+  public final static int XBOX_PORT = 0;
+    
+  private final XboxController xbox = new XboxController(XBOX_PORT);
+  private final XboxControllerSim xboxSim = new XboxControllerSim(xbox);
+  
+  private final CommandScheduler scheduler = CommandScheduler.getInstance();
+
+  private final UserInterfaceSubsystem userInterface = new UserInterfaceSubsystem();
+  private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -28,8 +47,27 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
     DataLogManager.start();
+
+    m_robotContainer = new RobotContainer();
+
+    // Need to register all subsystems with the scheduler. Should be part of robot constants
+    scheduler.registerSubsystem(userInterface);
+    scheduler.registerSubsystem(elevator);
+
+    // Log events in the Smart Dashboard
+    scheduler.onCommandInitialize(
+      command -> Shuffleboard.addEventMarker(
+      "Command initialized", command.getName(), EventImportance.kNormal));
+    scheduler.onCommandInterrupt(
+      command -> Shuffleboard.addEventMarker(
+      "Command interrupted", command.getName(), EventImportance.kNormal));
+    scheduler.onCommandFinish(
+      command -> Shuffleboard.addEventMarker(
+      "Command finished", command.getName(), EventImportance.kNormal));
+
+    
+                
   }
 
   /**
@@ -45,7 +83,7 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
+    scheduler.run();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -83,12 +121,17 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if (userInterface.isElevatorUp()) {
+      scheduler.schedule(new MoveElevatorUpCommand());
+    } else if (userInterface.isElevatorDown()) {
+    }
+  }
 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+    scheduler.cancelAll();
   }
 
   /** This function is called periodically during test mode. */
