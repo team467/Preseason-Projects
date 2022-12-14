@@ -10,6 +10,15 @@
     }
   },
   "NetworkTables": {
+    "LiveWindow": {
+      ".status": {
+        "open": true
+      },
+      "ElevatorSubsystem": {
+        "open": true
+      },
+      "open": true
+    },
     "SmartDashboard": {
       "Elevator Sim": {
         "open": true
