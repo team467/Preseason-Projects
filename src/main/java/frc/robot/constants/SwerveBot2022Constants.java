@@ -66,7 +66,7 @@ public class SwerveBot2022Constants implements Constants {
 
   @Override
   public SimpleFeedforwardConstant moduleDriveFF() {
-    return new SimpleFeedforwardConstant(0.19359, 1.8193, 0.38297);
+    return new SimpleFeedforwardConstant(0.19359, 0.8193, 0.38297);
   }
 
   @Override
