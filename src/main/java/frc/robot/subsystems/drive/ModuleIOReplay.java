@@ -11,4 +11,10 @@ public class ModuleIOReplay implements ModuleIO {
 
   @Override
   public void setTurnVoltage(double volts) {}
+
+  @Override
+  public void setDriveBrakeMode(boolean brake) {}
+
+  @Override
+  public void setTurnBrakeMode(boolean brake) {}
 }

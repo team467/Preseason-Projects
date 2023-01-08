@@ -14,7 +14,7 @@ public class GyroIOADIS16448 implements GyroIO {
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
-    inputs.connected = true;
+    inputs.connected = gyro.isConnected();
     inputs.angle = gyro.getAngle();
     inputs.rate = gyro.getRate();
   }

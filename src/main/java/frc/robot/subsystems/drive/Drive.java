@@ -1,6 +1,6 @@
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
@@ -19,7 +20,9 @@ public class Drive extends SubsystemBase {
 
   private static final SimpleMotorFeedforward driveFF =
       RobotConstants.get().moduleDriveFF().getFeedforward(); // Faster to type and shorter to read
-  private static final PIDController[] turnFB = new PIDController[4];
+  private static final SimpleMotorFeedforward turnFF =
+      RobotConstants.get().moduleTurnFF().getFeedforward();
+  private static final ProfiledPIDController[] turnFB = new ProfiledPIDController[4];
   private final ModuleIO[] moduleIOs = new ModuleIO[4];
   private final ModuleIO.ModuleIOInputs[] moduleIOInputs =
       new ModuleIO.ModuleIOInputs[] {
@@ -37,7 +40,7 @@ public class Drive extends SubsystemBase {
 
   private final SwerveDriveOdometry odometry;
 
-  private double[] lastModulePositions = new double[] {0.0, 0.0, 0.0, 0.0};
+  private boolean brakeMode = false;
 
   /**
    * Configures the drive subsystem
@@ -57,8 +60,13 @@ public class Drive extends SubsystemBase {
     moduleIOs[3] = brIO;
 
     for (int i = 0; i < 4; i++) {
-      turnFB[i] = RobotConstants.get().moduleTurnFB().getPIDController();
+      this.moduleIOs[i].updateInputs(this.moduleIOInputs[i]);
+      turnFB[i] =
+          RobotConstants.get()
+              .moduleTurnFB()
+              .getProfiledPIDController(new TrapezoidProfile.Constraints(550.6, 7585));
       turnFB[i].enableContinuousInput(-Math.PI, Math.PI);
+      turnFB[i].reset(this.moduleIOInputs[i].turnPositionAbsolute);
     }
 
     SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
@@ -92,6 +100,13 @@ public class Drive extends SubsystemBase {
       moduleIOs[i].updateInputs(moduleIOInputs[i]);
       Logger.getInstance().processInputs("Drive/Module" + i, moduleIOInputs[i]);
     }
+
+    Logger.getInstance()
+        .recordOutput(
+            "Chassis velocity",
+            new double[] {
+              setpoint.vxMetersPerSecond, setpoint.vyMetersPerSecond, setpoint.omegaRadiansPerSecond
+            });
 
     // Update angle measurements
     Rotation2d[] turnPositions = new Rotation2d[4];
@@ -130,7 +145,8 @@ public class Drive extends SubsystemBase {
         } else {
           moduleIOs[i].setTurnVoltage(
               turnFB[i].calculate(
-                  turnPositions[i].getRadians(), setpointStatesOptimized[i].angle.getRadians()));
+                      turnPositions[i].getRadians(), setpointStatesOptimized[i].angle.getRadians())
+                  + turnFF.calculate(turnFB[i].getSetpoint().velocity));
         }
 
         // Update velocity based on turn error
@@ -188,6 +204,34 @@ public class Drive extends SubsystemBase {
 
     // Log odometry pose
     Logger.getInstance().recordOutput("Odometry", getPose());
+
+    // Enable/disable brake mode
+    if (DriverStation.isEnabled()) {
+      if (!brakeMode) {
+        brakeMode = true;
+        for (int i = 0; i < 4; i++) {
+          moduleIOs[i].setTurnBrakeMode(true);
+          moduleIOs[i].setDriveBrakeMode(true);
+        }
+      }
+    } else {
+      boolean stillMoving = false;
+      for (int i = 0; i < 4; i++) {
+        if (Math.abs(
+                moduleIOInputs[i].driveVelocity * (RobotConstants.get().moduleWheelDiameter() / 2))
+            > RobotConstants.get().driveMaxCoastVelocity()) {
+          stillMoving = true;
+        }
+      }
+
+      if (brakeMode && !stillMoving) {
+        brakeMode = false;
+        for (int i = 0; i < 4; i++) {
+          moduleIOs[i].setTurnBrakeMode(false);
+          moduleIOs[i].setDriveBrakeMode(false);
+        }
+      }
+    }
   }
 
   /**

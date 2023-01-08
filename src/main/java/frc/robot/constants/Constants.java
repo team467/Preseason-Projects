@@ -46,6 +46,8 @@ public interface Constants {
     SIM
   }
 
+  double driveMaxCoastVelocity();
+
   /**
    * @return Max speed in m/s
    */

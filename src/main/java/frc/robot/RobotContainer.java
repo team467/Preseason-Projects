@@ -92,10 +92,10 @@ public class RobotContainer {
           drive =
               new Drive( // TODO: Edit module motor ids
                   new GyroIOADIS16470(),
-                  new ModuleIOSparkMAX(1, 2, 3),
-                  new ModuleIOSparkMAX(3, 4, 5),
-                  new ModuleIOSparkMAX(5, 6, 7),
-                  new ModuleIOSparkMAX(7, 8, 9));
+                  new ModuleIOSparkMAX(5, 6, 11, 0),
+                  new ModuleIOSparkMAX(7, 8, 12, 1),
+                  new ModuleIOSparkMAX(3, 4, 10, 2),
+                  new ModuleIOSparkMAX(1, 2, 9, 3));
           break;
         case ROBOT_SIMBOT:
           drive =

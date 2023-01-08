@@ -54,4 +54,8 @@ public interface ModuleIO {
   void setDriveVoltage(double volts);
 
   void setTurnVoltage(double volts);
+
+  void setDriveBrakeMode(boolean brake);
+
+  void setTurnBrakeMode(boolean brake);
 }

@@ -69,6 +69,8 @@ public class SwerveControllerCommand extends CommandBase {
 
     timer.reset();
     timer.start();
+
+    Logger.getInstance().recordOutput("Odometry/Trajectory", customGenerator.getDriveTrajectory());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -21,12 +21,17 @@ public class SimBot2022Constants implements Constants {
     return null;
   }
 
+  @Override
+  public double driveMaxCoastVelocity() {
+    return 0;
+  }
+
   private Translation2d[] moduleTranslations() {
     return new Translation2d[] {
       new Translation2d(0.65 / 2, 0.65 / 2),
       new Translation2d(0.65 / 2, -0.65 / 2),
-      new Translation2d(-0.65 / 2, 0.65 / 2),
-      new Translation2d(-0.65 / 2, -0.65 / 2)
+      new Translation2d(-0.65 / 2, -0.65 / 2),
+      new Translation2d(-0.65 / 2, 0.65 / 2)
     };
   }
 
@@ -39,7 +44,7 @@ public class SimBot2022Constants implements Constants {
   public double maxAngularSpeed() {
     return maxLinearSpeed()
         / Arrays.stream(moduleTranslations())
-            .map(translation -> translation.getNorm())
+            .map(Translation2d::getNorm)
             .max(Double::compare)
             .get();
   }

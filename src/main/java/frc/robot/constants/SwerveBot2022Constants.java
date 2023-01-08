@@ -7,6 +7,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.constants.controls.FeedbackConstant;
 import frc.robot.constants.controls.GearRatio;
 import frc.robot.constants.controls.SimpleFeedforwardConstant;
+import java.util.Arrays;
 
 public class SwerveBot2022Constants implements Constants {
   @Override
@@ -16,23 +17,36 @@ public class SwerveBot2022Constants implements Constants {
 
   @Override
   public String logFolder() {
-    return "/media/sda1";
+    return null;
+  }
+
+  @Override
+  public double driveMaxCoastVelocity() {
+    //    return 0.5;
+    return 100;
   }
 
   private Translation2d[] moduleTranslations() {
     return new Translation2d[] {
-      new Translation2d(), new Translation2d(), new Translation2d(), new Translation2d()
+      new Translation2d(Units.inchesToMeters(11.50), Units.inchesToMeters(11.50)),
+      new Translation2d(Units.inchesToMeters(11.50), -Units.inchesToMeters(11.50)),
+      new Translation2d(-Units.inchesToMeters(11.50), Units.inchesToMeters(11.50)),
+      new Translation2d(-Units.inchesToMeters(11.50), -Units.inchesToMeters(11.50))
     };
   }
 
   @Override
   public double maxLinearSpeed() {
-    return 3.0;
+    return 1.0;
   }
 
   @Override
   public double maxAngularSpeed() {
-    return 1; // TODO
+    return maxLinearSpeed()
+        / Arrays.stream(moduleTranslations())
+            .map(Translation2d::getNorm)
+            .max(Double::compare)
+            .get();
   }
 
   @Override
@@ -52,17 +66,19 @@ public class SwerveBot2022Constants implements Constants {
 
   @Override
   public SimpleFeedforwardConstant moduleDriveFF() {
-    return new SimpleFeedforwardConstant(0, 0, 0);
+    return new SimpleFeedforwardConstant(0.19359, 1.8193, 0.38297);
   }
 
   @Override
   public SimpleFeedforwardConstant moduleTurnFF() {
     return new SimpleFeedforwardConstant(0.16302, 0.0089689, 0.00034929);
+    //    return new SimpleFeedforwardConstant(0, 0);
   }
 
   @Override
   public FeedbackConstant moduleTurnFB() {
     return new FeedbackConstant(3.2526, 0.05);
+    //    return new FeedbackConstant(0.1, 0);
   }
 
   @Override
@@ -73,7 +89,10 @@ public class SwerveBot2022Constants implements Constants {
   @Override
   public Rotation2d[] absoluteAngleOffset() {
     return new Rotation2d[] {
-      new Rotation2d(0), new Rotation2d(0), new Rotation2d(0), new Rotation2d(0)
+      Rotation2d.fromDegrees(-46.75781250000001),
+      Rotation2d.fromDegrees(11.162109374999998),
+      Rotation2d.fromDegrees(110.478515625),
+      Rotation2d.fromDegrees(-100.19531250000001)
     };
   }
 

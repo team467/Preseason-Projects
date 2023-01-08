@@ -52,4 +52,10 @@ public class ModuleIOSim implements ModuleIO {
     turnAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
     turnSim.setInputVoltage(turnAppliedVolts);
   }
+
+  @Override
+  public void setDriveBrakeMode(boolean brake) {}
+
+  @Override
+  public void setTurnBrakeMode(boolean brake) {}
 }

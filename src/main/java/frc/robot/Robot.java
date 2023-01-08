@@ -1,6 +1,7 @@
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -56,6 +57,7 @@ public class Robot extends LoggedRobot {
     switch (RobotConstants.get().mode()) {
       case REAL:
         logger.addDataReceiver(new NT4Publisher());
+        new PowerDistribution(20, ModuleType.kCTRE);
         String folder = RobotConstants.get().logFolder();
         if (folder != null) {
           logger.addDataReceiver(new WPILOGWriter(folder));
@@ -95,12 +97,12 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     // Log scheduled commands
-    Logger.getInstance()
-        .recordOutput(
-            "ActiveCommands/Scheduler",
-            NetworkTableInstance.getDefault()
-                .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
-                .getStringArray(new String[] {}));
+    //    Logger.getInstance()
+    //        .recordOutput(
+    //            "ActiveCommands/Scheduler",
+    //            NetworkTableInstance.getDefault()
+    //                .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
+    //                .getStringArray(new String[] {}));
 
     Threads.setCurrentThreadPriority(true, 10);
   }
